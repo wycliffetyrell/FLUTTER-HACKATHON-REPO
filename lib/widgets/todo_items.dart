@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:todolist/model/todo.dart';
-// Widget representing a single ToDo item in the list
-class ToDoItem extends StatelessWidget {
-  final ToDo todo; // The ToDo object associated with this item
-  final Function(ToDo) onToDoChanged; // Callback function for task completion status change
-  final Function(String) onDeleteItem; // Callback function for task deletion
 
-  // Constructor for ToDoItem, taking required parameters
+class ToDoItem extends StatelessWidget {
+  final ToDo todo;
+  final Function(ToDo) onToDoChanged;
+  final Function(String) onDeleteItem;
+
   const ToDoItem({
     Key? key,
     required this.todo,
@@ -14,50 +13,78 @@ class ToDoItem extends StatelessWidget {
     required this.onDeleteItem,
   }) : super(key: key);
 
+  // Map of mood emojis with lowercase keys for case-insensitive lookups
+  static const Map<String, String> moodEmojis = {
+    'happy': '😊',
+    'sad': '😢',
+    'angry': '😠',
+    'productive': '🚀',
+    'relaxed': '😌',
+    // Add more moods and corresponding emojis as needed
+  };
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 20),  // Set margin for the ListTile container
+      margin: const EdgeInsets.only(bottom: 20),
+      decoration: BoxDecoration(
+        color: Colors.white12, // Set cream white background color
+        borderRadius: BorderRadius.circular(15), // Add rounded corners
+      ),
       child: ListTile(
-        onTap: () {
-          onToDoChanged(todo);  // Invoke callback function when the item is tapped
-        },
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(20),  // Set rounded corners for the ListTile
-          ),
+        onTap: () => onToDoChanged(todo),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(15)),
         ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),  // Set content padding
-        tileColor: Colors.white,  // Set background color of the ListTile
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        tileColor: Colors.white,
         leading: Icon(
-          todo.isDone ? Icons.check_box : Icons.check_box_outline_blank,  // Display check box icon based on completion status
-          color: Colors.blue,  // Set icon color to blue
+          todo.isDone ? Icons.check_box : Icons.check_box_outline_blank,
+          color: Colors.blue,
         ),
-        title: Text(
-          todo.todoText,  // Display the task text
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.brown,
-            decoration: todo.isDone ? TextDecoration.lineThrough : null,  // Apply strikethrough decoration if task is completed
-          ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              todo.todoText,
+              style: TextStyle(
+                fontSize: 16,
+                color: todo.isDone ? Colors.grey[500] : Colors.black,
+                decoration: todo.isDone ? TextDecoration.lineThrough : null,
+              ),
+            ),
+            // Display mood emoji if mood exists in the map (case-insensitive)
+            if (todo.mood != null)
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.yellow, // Yellow background for the emoji
+                ),
+                child: Text(
+                  moodEmojis[
+                      todo.mood!.toLowerCase()]!, // Lowercase the mood key
+                  style: TextStyle(
+                    fontSize: 24, // Adjust the size of the emoji
+                    color: Colors.black, // Black color for the emoji
+                  ),
+                ),
+              ),
+          ],
         ),
         trailing: Container(
-          padding: EdgeInsets.all(0),
-          margin: EdgeInsets.symmetric(vertical: 12),
-          height: 35,
-          width: 35,
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.red,  // Set background color of the delete button container to red
-            borderRadius: BorderRadius.circular(5),  // Set rounded corners for the delete button container
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(10),
           ),
           child: IconButton(
-            onPressed: () {
-              onDeleteItem(todo.id);  // Invoke callback function when delete button is pressed, passing task ID
-            },
-            icon: Icon(
+            onPressed: () => onDeleteItem(todo.id),
+            icon: const Icon(
               Icons.delete,
               size: 18,
-              color: Colors.green,  // Set icon color to white
+              color: Colors.white,
             ),
           ),
         ),
